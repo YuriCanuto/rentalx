@@ -23,6 +23,8 @@
   "rules": {
     "camelcase": "off",
     "import/no-unresolved": "error",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
     "@typescript-eslint/naming-convention": [
       "error",
       {

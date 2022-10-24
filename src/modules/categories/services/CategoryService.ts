@@ -1,7 +1,8 @@
 import { parse as csvParse } from "csv-parse";
 import fs from "fs";
+import { inject, injectable } from "tsyringe";
 
-import { Category } from "../model/Category";
+import { Category } from "../entities/Category";
 import { ICategoriesRepository } from "../repositories/ICategoriesRepository";
 
 interface IRequest {
@@ -14,11 +15,17 @@ interface IImportCategory {
   description: string;
 }
 
+@injectable()
 class CategoryService {
-  constructor(private categoriesRepository: ICategoriesRepository) {}
+  constructor(
+    @inject("CategoriesRepository")
+    private categoriesRepository: ICategoriesRepository
+  ) {}
 
-  create({ name, description }: IRequest): void {
-    const categoriesAlreadyExists = this.categoriesRepository.findByName(name);
+  async create({ name, description }: IRequest): Promise<void> {
+    const categoriesAlreadyExists = await this.categoriesRepository.findByName(
+      name
+    );
     if (categoriesAlreadyExists) {
       throw new Error("Category already exists!");
     }
@@ -26,7 +33,7 @@ class CategoryService {
     this.categoriesRepository.create({ name, description });
   }
 
-  list(): Category[] {
+  list(): Promise<Category[]> {
     return this.categoriesRepository.list();
   }
 

@@ -1,20 +1,23 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
+import { container } from "tsyringe";
 
 import { CategoryService } from "../services/CategoryService";
 
 class CategoryController {
-  constructor(private categoryService: CategoryService) {}
-
-  create(request: Request, response: Response): Response {
+  async create(request: Request, response: Response): Promise<Response> {
     const { name, description } = request.body;
 
-    this.categoryService.create({ name, description });
+    const categoryService = container.resolve(CategoryService);
+
+    await categoryService.create({ name, description });
 
     return response.status(201).send();
   }
 
   list(request: Request, response: Response): Response {
-    const list = this.categoryService.list();
+    const categoryService = container.resolve(CategoryService);
+
+    const list = categoryService.list();
 
     return response.json(list);
   }
@@ -22,7 +25,9 @@ class CategoryController {
   import(request: Request, response: Response): Response {
     const { file } = request;
 
-    this.categoryService.import(file);
+    const categoryService = container.resolve(CategoryService);
+
+    categoryService.import(file);
 
     return response.status(201).send();
   }
